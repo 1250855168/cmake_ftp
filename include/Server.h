@@ -1,28 +1,44 @@
 /******************************
-*   author: yuesong-feng
-*   
-*
-*
-******************************/
+ *   author: yuesong-feng
+ *
+ *
+ *
+ ******************************/
 #pragma once
 #include <map>
+#include <mutex>
 class EventLoop;
 class Socket;
 class Acceptor;
 class Connection;
-class Server
-{
+
+class Server {
 private:
-    EventLoop *loop;
-    Acceptor *acceptor;
-    std::map<int, Connection*> connections;
+  static Server *instance;
+  EventLoop *loop;
+  Acceptor *acceptor;
+  std::map<int, Connection *> connections;
+  Server(EventLoop *);
+  ~Server();
+  static std::mutex mutex;
+
 public:
-    Server(EventLoop*);
-    ~Server();
+  static Server *getInstance(EventLoop *loop) {
+    std::lock_guard<std::mutex> lock(mutex);
+    if (!instance) {
+      instance = new Server(loop);
+    }
+    return instance;
+  }
 
-    void handleReadEvent(int);
-    void newConnection(Socket *sock);
-    void deleteConnection(int sockfd);
+  static void destoryInstance() {
+    if (!instance) {
+      delete instance;
+      instance = nullptr;
+    }
+  }
+
+  void handleReadEvent(int);
+  void newConnection(Socket *sock);
+  void deleteConnection(int sockfd);
 };
-
-

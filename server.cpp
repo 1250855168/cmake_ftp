@@ -5,7 +5,12 @@ int terminate = 0;
 
 int main() {
   EventLoop *loop = new EventLoop();
-  Server *server = new Server(loop);
+
+  Server *server = Server::getInstance(loop);
+
   loop->loop();
+
+  Server::destoryInstance();
+
   return 0;
 }
