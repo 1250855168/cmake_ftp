@@ -2,7 +2,7 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#define FTP_ROOT_DIR "/home/xxx/Me/zzz"
+#define FTP_ROOT_DIR "/home/xxx/Me/build"
 
 extern int terminate;
 
