@@ -59,7 +59,6 @@ void Connection::echo(int sockfd) {
 
     ssize_t bytes_read = read_raw_data(sockfd, (unsigned char *)raw_cmd, 4096);
 
-
     printf("收到命令: ");
 
     for (j = 0; j < bytes_read; j++) {
