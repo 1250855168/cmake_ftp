@@ -70,7 +70,7 @@ void send_ftp_cmd(int sock, cmd_no_t cmd, int arg_len, char* arg)
         raw_cmd[i] = arg[j];
     }
 
-    send_data(sock,(char *) raw_cmd, i);
+    send_data(sock,(unsigned char *)raw_cmd, i);
 
     free(raw_cmd);
     
@@ -92,7 +92,7 @@ void handle_cmd_ls(int sock)
     {
         // 1. 先接收 执行情况
         unsigned char resp[8192];
-        ret = read_raw_data(sock,(char *) resp, 8192);
+        ret = read_raw_data(sock,(unsigned char *) resp, 8192);
         if (ret < 0)
         {
             break;
@@ -105,7 +105,7 @@ void handle_cmd_ls(int sock)
         }
 
         //2. 接收 ls的执行结果
-        ret = read_raw_data(sock,(char *) resp, 8192);
+        ret = read_raw_data(sock,(unsigned char *)resp, 8192);
         if (ret > 0)
         {
             printf("%s\n", resp + 5);
@@ -123,7 +123,7 @@ void handle_cmd_get(int sock, char *filename)
     int i,j ,k;
     int arg_len = strlen(filename) + 1;
     int cmd_len = 1 + 4 + arg_len;
-    char* cmd = (char*) malloc( cmd_len );
+    unsigned char * cmd = (unsigned char *) malloc( cmd_len );
 
     cmd[0] = CMD_GET;
     
@@ -132,14 +132,14 @@ void handle_cmd_get(int sock, char *filename)
     cmd[3] = (arg_len >> 16) & 0xff;
     cmd[4] = (arg_len >> 24) & 0xff;
 
-    strcpy(cmd + 5, filename);
+    strcpy((char *)(cmd + 5),filename);
 
-    send_data(sock, cmd, cmd_len);
+    send_data(sock, (unsigned char *)cmd, cmd_len);
 
   
     // 1. 获取服务器 执行结果，成功还是不成功
     unsigned char resp[4];
-    k = read_raw_data(sock,(char *) resp ,4);
+    k = read_raw_data(sock,(unsigned char *)resp ,4);
     if (k != 2)
     {
         return;
@@ -151,7 +151,7 @@ void handle_cmd_get(int sock, char *filename)
 
     printf("服务器回复get命令 OK!\n");
     //2. 
-    k = read_raw_data(sock,(char *)resp, 4);
+    k = read_raw_data(sock,(unsigned char *)resp, 4);
     if (k != 4)
     {
         return;
@@ -167,7 +167,7 @@ void handle_cmd_get(int sock, char *filename)
 
     while (r < file_len)
     {
-        int ret = read_raw_data(sock, (char *)p, 8192);
+        int ret = read_raw_data(sock, (unsigned char *)p, 8192);
         if (ret > 0)
         {
             write(fd, p, ret);

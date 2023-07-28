@@ -137,12 +137,15 @@ char* get_filenames(char* dir)
         return NULL;
     }
 
-    char *p = (char *)malloc(4096);
+    char *p =(char *)malloc(4096);
     struct  dirent *dirp;
     int r = 0;
     while (dirp = readdir(dp))
     {
         //printf("%s/%s\n", argv[1], dirp->d_name);
+        if((strcmp(dirp->d_name,".")) == 0 ||
+            (strcmp(dirp->d_name,"..")) == 0)
+            continue;
 
         r += sprintf(p + r, "%s ", dirp->d_name);
     }   
@@ -168,7 +171,7 @@ char* get_filenames(char* dir)
         成功返回实际发送的字节数
         失败返回-1
 */
-int send_data(int conn, char* raw_data, int len)
+int send_data(int conn,unsigned char* raw_data, int len)
 {
     int i,j;
     int ret;
@@ -179,12 +182,12 @@ int send_data(int conn, char* raw_data, int len)
     send_dat[i++] = 0xc0;
     for (j = 0; j < len; j++)
     {
-        if (raw_data[j] == (char)0xc0)
+        if (raw_data[j] == 0xc0)
         {
             send_dat[i++] = 0xdb;
             send_dat[i++] = 0xdc;
         }
-        else if (raw_data[j] ==(char)0xdb)
+        else if (raw_data[j] == 0xdb)
         {
             send_dat[i++] = 0xdb;
             send_dat[i++] = 0xdd;
@@ -234,7 +237,7 @@ int send_data(int conn, char* raw_data, int len)
         成功 返回实际接收到的命令或数据包的字节数
         失败 返回-1;
 */
-int read_raw_data(int sock, char* data, int max_len)
+int read_raw_data(int sock,unsigned char* data, int max_len)
 {
     int i,j,k;
     unsigned char ch;

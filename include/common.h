@@ -2,15 +2,15 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#define FTP_ROOT_DIR "/home/xxx/Me/build"
-
-extern int terminate;
+#define FTP_ROOT_DIR "/mnt/hgfs/gxiang/7.test/7-project/1-ftp_server"
+#define FTP_PUT_DIR "/mnt/hgfs/gxiang/7.test/7-project/2-ftp_client"
 
 typedef enum cmd_no {
   CMD_LS = 0x01,
   CMD_GET = 0x02,
   CMD_PUT = 0x03,
   CMD_BYE = 0x04,
+  CMD_PLAY = 0x05,
 
   CMD_UNKNOWN = 0Xff
 } cmd_no_t;
@@ -62,7 +62,7 @@ char *get_filenames(char *dir);
         成功返回实际发送的字节数
         失败返回-1
 */
-int send_data(int conn, char *raw_data, int len);
+int send_data(int conn, unsigned char *raw_data, int len);
 
 /*
     read_raw_data: 从套接字中，接收一个完整的 命令或数据包
@@ -73,5 +73,5 @@ int send_data(int conn, char *raw_data, int len);
         成功 返回实际接收到的命令或数据包的字节数
         失败 返回-1;
 */
-int read_raw_data(int sock, char *data, int max_len);
+int read_raw_data(int sock, unsigned char *data, int max_len);
 #endif

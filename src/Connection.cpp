@@ -50,15 +50,15 @@ void Connection::echo(int sockfd) {
   unsigned char raw_cmd[4096]; // 转义后的命令
   int i, j;
 
-  char buf[1024]; // 这个buf大小无所谓
-
   while (
       true) { // 由于使用非阻塞IO，读取客户端buffer，一次读取buf大小数据，直到全部读取完毕
-    bzero(&buf, sizeof(buf));
 
     // ssize_t bytes_read = read(sockfd, buf, sizeof(buf));
 
-    ssize_t bytes_read = read_raw_data(sockfd, (char *)raw_cmd, 4096);
+    printf("%d %s\n", __LINE__, __FUNCTION__);
+
+    ssize_t bytes_read = read_raw_data(sockfd, (unsigned char *)raw_cmd, 4096);
+
 
     printf("收到命令: ");
 
@@ -67,28 +67,25 @@ void Connection::echo(int sockfd) {
     }
     printf("\n");
 
-   
-
     if (bytes_read > 0) {
 
-
-        //进行数据包的发送
+      // 进行数据包的发送
       handle_ftp_cmd(sockfd, (unsigned char *)raw_cmd, bytes_read);
+
+      break;
+
     } else if (bytes_read == -1 && errno == EINTR) { // 客户端正常中断、继续读取
       printf("continue reading\n");
       continue;
     } else if (bytes_read == -1 &&
-               ((errno == EAGAIN) ||
-                (errno ==
-                 EWOULDBLOCK))) { 
-                    // 非阻塞IO，这个条件表示数据全部读取完毕
+               ((errno == EAGAIN) || (errno == EWOULDBLOCK))) {
+      // 非阻塞IO，这个条件表示数据全部读取完毕
       // printf("message from client fd %d: %s\n", sockfd, readBuffer->c_str());
-
 
       //  errif(write(sockfd, readBuffer->c_str(), readBuffer->size()) == -1,
       //  "socket write error");
 
-      //send(sockfd);
+      // send(sockfd);
 
       readBuffer->clear();
       break;
